@@ -2,40 +2,33 @@ use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
-use uuid::Uuid;
 
 use crate::position::Position;
 
-#[derive(Debug, Clone, Copy, Eq)]
+#[derive(Debug, Clone, Copy)]
 pub struct Object {
-    id: Uuid,
     position: Position,
+    color: Color,
     width: u32,
     height: u32,
 }
 
-impl PartialEq for Object {
-    fn eq(&self, other: &Self) -> bool {
-        self.id == other.id
-    }
-}
-
 impl Object {
-    pub fn new(position: Position, width: u32, height: u32) -> Object {
+    pub fn new(position: Position, color: Color, width: u32, height: u32) -> Object {
         Object {
-            id: Uuid::new_v4(),
             position,
+            color,
             width,
             height,
         }
     }
 
-    pub fn id(&self) -> Uuid {
-        self.id
-    }
-
     pub fn position(&self) -> Position {
         self.position
+    }
+
+    pub fn color(&self) -> Color {
+        self.color
     }
 
     pub fn width(&self) -> u32 {

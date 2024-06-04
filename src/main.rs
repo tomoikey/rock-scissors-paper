@@ -1,15 +1,17 @@
 use std::env;
 use std::time::Duration;
 
-use log::debug;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 
+use crate::object::Object;
 use crate::position::Position;
+use crate::screen::Screen;
 
 mod object;
 mod position;
+mod screen;
 
 const SCREEN_WIDTH: u32 = 800;
 const SCREEN_HEIGHT: u32 = 600;
@@ -29,7 +31,9 @@ pub fn main() {
     env::set_var("RUST_LOG", "debug");
     env_logger::init();
 
-    let mut object = object::Object::new(Position::new(0, 0), 100, 100);
+    let mut screen = Screen::new(SCREEN_WIDTH, SCREEN_HEIGHT);
+    let object = Object::new(Position::new(0, 0), Color::WHITE, 100, 100);
+    let object_id = screen.add_object(object);
 
     'running: loop {
         for event in event_pump.poll_iter() {
@@ -42,31 +46,31 @@ pub fn main() {
                 Event::KeyDown {
                     keycode: Some(keycode),
                     ..
-                } => match keycode {
-                    Keycode::Right => {
-                        object.move_right(5);
+                } => {
+                    let object = screen.get_object_mut(object_id).unwrap();
+                    match keycode {
+                        Keycode::Right => {
+                            object.move_right(5);
+                        }
+                        Keycode::Left => {
+                            object.move_left(5);
+                        }
+                        Keycode::Down => {
+                            object.move_down(5);
+                        }
+                        Keycode::Up => {
+                            object.move_up(5);
+                        }
+                        _ => {}
                     }
-                    Keycode::Left => {
-                        object.move_left(5);
-                    }
-                    Keycode::Down => {
-                        object.move_down(5);
-                    }
-                    Keycode::Up => {
-                        object.move_up(5);
-                    }
-                    _ => {}
-                },
+                }
                 _ => {}
             }
         }
         canvas.set_draw_color(Color::RGB(0, 0, 0));
         canvas.clear();
 
-        if object.hit_wall(SCREEN_WIDTH, SCREEN_HEIGHT) {
-            debug!("object (id: {}) hit wall", object.id());
-        }
-        object.draw(&mut canvas, Color::RGB(255, 0, 0));
+        screen.draw(&mut canvas);
 
         canvas.present();
         std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
