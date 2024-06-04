@@ -12,9 +12,10 @@ use crate::screen::Screen;
 mod object;
 mod position;
 mod screen;
+mod velocity;
 
-const SCREEN_WIDTH: u32 = 800;
-const SCREEN_HEIGHT: u32 = 600;
+pub const SCREEN_WIDTH: u32 = 800;
+pub const SCREEN_HEIGHT: u32 = 600;
 
 pub fn main() {
     let sdl_context = sdl2::init().unwrap();
@@ -32,7 +33,14 @@ pub fn main() {
     env_logger::init();
 
     let mut screen = Screen::new(SCREEN_WIDTH, SCREEN_HEIGHT);
-    let object = Object::new(Position::new(0, 0), Color::WHITE, 100, 100);
+    let object = Object::new(
+        Position::new(50, 50),
+        Color::WHITE,
+        100,
+        100,
+        1f64,
+        velocity::Velocity::new(2f64, 2f64),
+    );
     let object_id = screen.add_object(object);
 
     'running: loop {

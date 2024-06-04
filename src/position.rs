@@ -9,10 +9,12 @@ impl Position {
         Position { x, y }
     }
 
+    #[inline]
     pub fn x(&self) -> i32 {
         self.x
     }
 
+    #[inline]
     pub fn y(&self) -> i32 {
         self.y
     }

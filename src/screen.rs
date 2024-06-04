@@ -49,8 +49,9 @@ impl Screen {
         None
     }
 
-    pub fn draw(&self, canvas: &mut Canvas<Window>) {
-        for object in self.objects.values() {
+    pub fn draw(&mut self, canvas: &mut Canvas<Window>) {
+        for object in self.objects.values_mut() {
+            object.move_naturally();
             object.draw(canvas, object.color());
         }
     }
