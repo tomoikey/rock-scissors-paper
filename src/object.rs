@@ -1,6 +1,4 @@
-use sdl2::pixels::Color;
-use sdl2::rect::Rect;
-use sdl2::render::Canvas;
+use sdl2::render::{Canvas, Texture};
 use sdl2::video::Window;
 
 use crate::position::Position;
@@ -9,7 +7,6 @@ use crate::velocity::Velocity;
 #[derive(Debug, Clone, Copy)]
 pub struct Object {
     position: Position,
-    color: Color,
     width: u32,
     height: u32,
     mass: f64,
@@ -19,7 +16,6 @@ pub struct Object {
 impl Object {
     pub fn new(
         position: Position,
-        color: Color,
         width: u32,
         height: u32,
         mass: f64,
@@ -29,7 +25,6 @@ impl Object {
         Object {
             position,
             width,
-            color,
             height,
             mass,
             velocity,
@@ -129,15 +124,9 @@ impl Object {
         &mut self.velocity
     }
 
-    pub fn draw(&self, canvas: &mut Canvas<Window>) {
-        canvas.set_draw_color(self.color);
+    pub fn draw(&self, canvas: &mut Canvas<Window>, texture: &Texture) {
         canvas
-            .fill_rect(Rect::new(
-                self.position.x() as i32,
-                self.position.y() as i32,
-                self.width,
-                self.height,
-            ))
-            .unwrap();
+            .copy(texture, None, None)
+            .expect("failed to copy texture");
     }
 }
