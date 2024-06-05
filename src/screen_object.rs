@@ -12,6 +12,52 @@ pub enum ScreenObject {
     Scissors(Scissors),
 }
 
+impl ScreenObject {
+    fn battle(&self, other: &ScreenObject) -> Option<bool> {
+        match (self, other) {
+            (ScreenObject::Paper(_), ScreenObject::Rock(_)) => Some(true),
+            (ScreenObject::Rock(_), ScreenObject::Scissors(_)) => Some(true),
+            (ScreenObject::Scissors(_), ScreenObject::Paper(_)) => Some(true),
+            (ScreenObject::Paper(_), ScreenObject::Scissors(_)) => Some(false),
+            (ScreenObject::Rock(_), ScreenObject::Paper(_)) => Some(false),
+            (ScreenObject::Scissors(_), ScreenObject::Rock(_)) => Some(false),
+            _ => None,
+        }
+    }
+
+    pub fn collide(&mut self, other: &mut ScreenObject) {
+        self.deref_mut().collide(other.deref_mut());
+
+        match (&self, self.battle(other)) {
+            (ScreenObject::Paper(_), Some(true)) => {
+                let paper = Paper::from(**other);
+                *other = ScreenObject::Paper(paper);
+            }
+            (ScreenObject::Rock(_), Some(true)) => {
+                let rock = Rock::from(**other);
+                *other = ScreenObject::Rock(rock);
+            }
+            (ScreenObject::Scissors(_), Some(true)) => {
+                let scissors = Scissors::from(**other);
+                *other = ScreenObject::Scissors(scissors);
+            }
+            (ScreenObject::Paper(_), Some(false)) => {
+                let scissors = Scissors::from(**self);
+                *self = ScreenObject::Scissors(scissors);
+            }
+            (ScreenObject::Rock(_), Some(false)) => {
+                let paper = Paper::from(**self);
+                *self = ScreenObject::Paper(paper);
+            }
+            (ScreenObject::Scissors(_), Some(false)) => {
+                let rock = Rock::from(**self);
+                *self = ScreenObject::Rock(rock);
+            }
+            _ => {}
+        }
+    }
+}
+
 impl Deref for ScreenObject {
     type Target = Object;
 

@@ -24,6 +24,26 @@ impl Rock {
     }
 }
 
+impl From<Object> for Rock {
+    fn from(object: Object) -> Self {
+        let (position, width, height, mass, velocity) = (
+            object.position(),
+            object.width(),
+            object.height(),
+            object.mass(),
+            object.velocity(),
+        );
+        Self(Object::new(
+            position,
+            Color::RGB(255, 0, 0),
+            width,
+            height,
+            mass,
+            velocity,
+        ))
+    }
+}
+
 impl Deref for Rock {
     type Target = Object;
 

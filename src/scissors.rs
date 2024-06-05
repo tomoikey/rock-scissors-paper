@@ -24,6 +24,26 @@ impl Scissors {
     }
 }
 
+impl From<Object> for Scissors {
+    fn from(object: Object) -> Self {
+        let (position, width, height, mass, velocity) = (
+            object.position(),
+            object.width(),
+            object.height(),
+            object.mass(),
+            object.velocity(),
+        );
+        Self(Object::new(
+            position,
+            Color::RGB(0, 255, 0),
+            width,
+            height,
+            mass,
+            velocity,
+        ))
+    }
+}
+
 impl Deref for Scissors {
     type Target = Object;
 

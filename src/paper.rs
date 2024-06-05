@@ -24,6 +24,26 @@ impl Paper {
     }
 }
 
+impl From<Object> for Paper {
+    fn from(object: Object) -> Self {
+        let (position, width, height, mass, velocity) = (
+            object.position(),
+            object.width(),
+            object.height(),
+            object.mass(),
+            object.velocity(),
+        );
+        Self(Object::new(
+            position,
+            Color::RGB(0, 0, 255),
+            width,
+            height,
+            mass,
+            velocity,
+        ))
+    }
+}
+
 impl Deref for Paper {
     type Target = Object;
 

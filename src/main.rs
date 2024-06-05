@@ -55,25 +55,13 @@ pub fn main() {
         );
         let object = match i % 3 {
             0 => screen_object::ScreenObject::Paper(paper::Paper::new(
-                position,
-                width,
-                height,
-                1.0 * mass,
-                velocity,
+                position, width, height, mass, velocity,
             )),
             1 => screen_object::ScreenObject::Rock(rock::Rock::new(
-                position,
-                width,
-                height,
-                5.0 * mass,
-                velocity,
+                position, width, height, mass, velocity,
             )),
             2 => screen_object::ScreenObject::Scissors(scissors::Scissors::new(
-                position,
-                width,
-                height,
-                25.0 * mass,
-                velocity,
+                position, width, height, mass, velocity,
             )),
             _ => unreachable!(),
         };
