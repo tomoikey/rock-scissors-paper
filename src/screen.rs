@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::ops::Deref;
 
 use log::debug;
-use sdl2::render::{Canvas, Texture};
+use sdl2::render::Canvas;
 use sdl2::video::Window;
 use uuid::Uuid;
 
@@ -93,7 +93,7 @@ impl<'a, 'r> Screen<'a, 'r> {
                         self.objects.get(id).unwrap().borrow_mut(),
                         self.objects.get(other_id).unwrap().borrow_mut(),
                     );
-                    self_object.object_mut().collide(other_object.object_mut());
+                    self_object.collide(&mut other_object);
                     self_object.object_mut().next_frame();
                     other_object.object_mut().next_frame();
 
