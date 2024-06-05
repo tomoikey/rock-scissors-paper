@@ -28,8 +28,8 @@ impl Object {
         assert!(mass > 0f64, "mass must be greater than 0");
         Object {
             position,
-            color,
             width,
+            color,
             height,
             mass,
             velocity,
@@ -39,11 +39,6 @@ impl Object {
     #[inline]
     pub fn position(&self) -> Position {
         self.position
-    }
-
-    #[inline]
-    pub fn color(&self) -> Color {
-        self.color
     }
 
     #[inline]
@@ -96,7 +91,7 @@ impl Object {
         is_left_collide || is_top_collide || is_right_collide || is_bottom_collide
     }
 
-    pub fn collide(&self, other: &Object) -> (Object, Object) {
+    pub fn collide(&mut self, other: &mut Object) {
         let self_velocity_x = ((self.mass - other.mass) * self.velocity.x()
             + 2.0 * other.mass * other.velocity.x())
             / (self.mass + other.mass);
@@ -111,24 +106,8 @@ impl Object {
             + 2.0 * self.mass * self.velocity.y())
             / (self.mass + other.mass);
 
-        (
-            Object::new(
-                self.position,
-                self.color,
-                self.width,
-                self.height,
-                self.mass,
-                Velocity::new(self_velocity_x, self_velocity_y),
-            ),
-            Object::new(
-                other.position,
-                other.color,
-                other.width,
-                other.height,
-                other.mass,
-                Velocity::new(other_velocity_x, other_velocity_y),
-            ),
-        )
+        self.velocity = Velocity::new(self_velocity_x, self_velocity_y);
+        other.velocity = Velocity::new(other_velocity_x, other_velocity_y);
     }
 
     pub fn next_frame(&mut self) {
@@ -140,8 +119,8 @@ impl Object {
         &mut self.velocity
     }
 
-    pub fn draw(&self, canvas: &mut Canvas<Window>, color: Color) {
-        canvas.set_draw_color(color);
+    pub fn draw(&self, canvas: &mut Canvas<Window>) {
+        canvas.set_draw_color(self.color);
         canvas
             .fill_rect(Rect::new(
                 self.position.x() as i32,

@@ -25,10 +25,6 @@ impl Velocity {
         self.y
     }
 
-    pub fn velocity(&self) -> f64 {
-        (self.x.powi(2) + self.y.powi(2)).sqrt()
-    }
-
     pub fn reverse_x(&mut self) {
         self.x = -self.x;
     }

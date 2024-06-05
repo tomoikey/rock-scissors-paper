@@ -5,17 +5,21 @@ use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 
-use crate::object::Object;
 use crate::position::Position;
 use crate::screen::Screen;
+use crate::velocity::Velocity;
 
 mod object;
+mod paper;
 mod position;
+mod rock;
+mod scissors;
 mod screen;
+mod screen_object;
 mod velocity;
 
-pub const SCREEN_WIDTH: u32 = 1440;
-pub const SCREEN_HEIGHT: u32 = 840;
+pub const SCREEN_WIDTH: u32 = 500;
+pub const SCREEN_HEIGHT: u32 = 500;
 
 pub fn main() {
     let sdl_context = sdl2::init().unwrap();
@@ -35,21 +39,45 @@ pub fn main() {
     let mut screen = Screen::new(SCREEN_WIDTH, SCREEN_HEIGHT);
 
     let objects_count = 50;
-    for _ in 0..objects_count {
+    for i in 0..objects_count {
         let size = 500 / objects_count;
-        let object = Object::new(
+        let (position, width, height, mass, velocity) = (
             Position::random(
                 (SCREEN_WIDTH - size) as f64,
                 (SCREEN_HEIGHT - size) as f64,
                 (SCREEN_WIDTH - size) as f64,
                 (SCREEN_HEIGHT - size) as f64,
             ),
-            Color::WHITE,
             size,
             size,
             1f64,
-            velocity::Velocity::random(1.3, 1.3),
+            Velocity::random(1.3, 1.3),
         );
+        let object = match i % 3 {
+            0 => screen_object::ScreenObject::Paper(paper::Paper::new(
+                position,
+                width,
+                height,
+                1.0 * mass,
+                velocity,
+            )),
+            1 => screen_object::ScreenObject::Rock(rock::Rock::new(
+                position,
+                width,
+                height,
+                5.0 * mass,
+                velocity,
+            )),
+            2 => screen_object::ScreenObject::Scissors(scissors::Scissors::new(
+                position,
+                width,
+                height,
+                25.0 * mass,
+                velocity,
+            )),
+            _ => unreachable!(),
+        };
+
         screen.add_object(object);
     }
 

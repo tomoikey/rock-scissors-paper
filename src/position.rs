@@ -15,8 +15,8 @@ impl Position {
         use rand::Rng;
         let mut rng = rand::thread_rng();
         Self::new(
-            rng.gen_range(0.0..max_width),
-            rng.gen_range(0.0..max_height),
+            rng.gen_range(0.1..max_width),
+            rng.gen_range(0.1..max_height),
             max_x,
             max_y,
         )
