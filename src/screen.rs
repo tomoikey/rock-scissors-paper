@@ -2,7 +2,6 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::ops::Deref;
 
-use log::debug;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
 use uuid::Uuid;
@@ -78,15 +77,11 @@ impl<'a, 'r> Screen<'a, 'r> {
                     let object = self.objects.get_mut(id).unwrap().get_mut().object_mut();
                     object.velocity_mut().reverse_x();
                     object.next_frame();
-
-                    debug!("Object({:?}) collided with wall", id);
                 }
                 Collision::TopWall | Collision::BottomWall => {
                     let object = self.objects.get_mut(id).unwrap().get_mut().object_mut();
                     object.velocity_mut().reverse_y();
                     object.next_frame();
-
-                    debug!("Object({:?}) collided with wall", id);
                 }
                 Collision::Object(other_id) => {
                     let (mut self_object, mut other_object) = (
@@ -96,8 +91,6 @@ impl<'a, 'r> Screen<'a, 'r> {
                     self_object.collide(&mut other_object);
                     self_object.object_mut().next_frame();
                     other_object.object_mut().next_frame();
-
-                    debug!("Object({:?}) collided with Object({:?})", id, other_id);
                 }
             }
         }
@@ -107,9 +100,9 @@ impl<'a, 'r> Screen<'a, 'r> {
         self.next_frame();
         for object in self.objects.values_mut() {
             match object.borrow().deref() {
-                ScreenObject::Paper(paper, _) => paper.draw(canvas),
-                ScreenObject::Rock(rock, _) => rock.draw(canvas),
-                ScreenObject::Scissors(scissors, _) => scissors.draw(canvas),
+                ScreenObject::Paper(paper) => paper.draw(canvas),
+                ScreenObject::Rock(rock) => rock.draw(canvas),
+                ScreenObject::Scissors(scissors) => scissors.draw(canvas),
             }
         }
     }

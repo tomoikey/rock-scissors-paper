@@ -6,8 +6,12 @@ use sdl2::image::LoadTexture;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 
+use crate::paper::Paper;
 use crate::position::Position;
+use crate::rock::Rock;
+use crate::scissors::Scissors;
 use crate::screen::Screen;
+use crate::screen_object::ScreenObject;
 use crate::velocity::Velocity;
 
 mod object;
@@ -19,8 +23,8 @@ mod screen;
 mod screen_object;
 mod velocity;
 
-pub const SCREEN_WIDTH: u32 = 500;
-pub const SCREEN_HEIGHT: u32 = 500;
+pub const SCREEN_WIDTH: u32 = 800;
+pub const SCREEN_HEIGHT: u32 = 800;
 
 pub fn main() {
     let sdl_context = sdl2::init().unwrap();
@@ -41,13 +45,13 @@ pub fn main() {
 
     let mut screen = Screen::new(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    let texture = texture_creator
-        .load_texture("assets/rock_scissors_paper.png")
-        .unwrap();
+    let rock_texture = texture_creator.load_texture("assets/rock.png").unwrap();
+    let paper_texture = texture_creator.load_texture("assets/paper.png").unwrap();
+    let scissors_texture = texture_creator.load_texture("assets/scissors.png").unwrap();
 
-    let objects_count = 50;
+    let objects_count = 2;
     for i in 0..objects_count {
-        let size = 530 / objects_count;
+        let size = 200 / objects_count;
         let (position, width, height, mass, velocity) = (
             Position::random(
                 (SCREEN_WIDTH - size) as f64,
@@ -62,18 +66,36 @@ pub fn main() {
         );
 
         let object = match i % 3 {
-            0 => screen_object::ScreenObject::Paper(
-                paper::Paper::new(position, width, height, mass, velocity, &texture),
-                &texture,
-            ),
-            1 => screen_object::ScreenObject::Rock(
-                rock::Rock::new(position, width, height, mass, velocity, &texture),
-                &texture,
-            ),
-            2 => screen_object::ScreenObject::Scissors(
-                scissors::Scissors::new(position, width, height, mass, velocity, &texture),
-                &texture,
-            ),
+            0 => ScreenObject::Paper(Paper::new(
+                position,
+                width,
+                height,
+                mass,
+                velocity,
+                &paper_texture,
+                &scissors_texture,
+                &rock_texture,
+            )),
+            1 => ScreenObject::Rock(Rock::new(
+                position,
+                width,
+                height,
+                mass,
+                velocity,
+                &rock_texture,
+                &paper_texture,
+                &scissors_texture,
+            )),
+            2 => ScreenObject::Scissors(Scissors::new(
+                position,
+                width,
+                height,
+                mass,
+                velocity,
+                &scissors_texture,
+                &rock_texture,
+                &paper_texture,
+            )),
             _ => unreachable!(),
         };
 

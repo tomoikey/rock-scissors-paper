@@ -1,3 +1,4 @@
+use sdl2::rect::Rect;
 use sdl2::render::{Canvas, Texture};
 use sdl2::video::Window;
 
@@ -126,7 +127,16 @@ impl Object {
 
     pub fn draw(&self, canvas: &mut Canvas<Window>, texture: &Texture) {
         canvas
-            .copy(texture, None, None)
+            .copy(
+                texture,
+                None,
+                Some(Rect::new(
+                    self.position.x() as i32,
+                    self.position.y() as i32,
+                    self.width,
+                    self.height,
+                )),
+            )
             .expect("failed to copy texture");
     }
 }
