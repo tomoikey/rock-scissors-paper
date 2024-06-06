@@ -22,6 +22,7 @@ mod rock;
 mod scissors;
 mod screen;
 mod screen_object;
+mod se;
 mod velocity;
 
 pub const SCREEN_WIDTH: u32 = 800;

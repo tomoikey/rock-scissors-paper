@@ -47,16 +47,6 @@ impl Object {
         self.height
     }
 
-    #[inline]
-    pub fn mass(&self) -> f64 {
-        self.mass
-    }
-
-    #[inline]
-    pub fn velocity(&self) -> Velocity {
-        self.velocity
-    }
-
     pub fn range_x(&self) -> (f64, f64) {
         (self.position.x(), self.position.x() + self.width as f64)
     }
