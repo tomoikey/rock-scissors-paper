@@ -1,4 +1,5 @@
 use std::env;
+use std::path::Path;
 use std::time::Duration;
 
 use sdl2::event::Event;
@@ -37,37 +38,36 @@ pub fn main() {
     let mut canvas = window.into_canvas().build().unwrap();
     let mut event_pump = sdl_context.event_pump().unwrap();
 
+    let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string()).unwrap();
+    let font = ttf_context
+        .load_font(Path::new("assets/SourceCodePro-Bold.ttf"), 40)
+        .unwrap();
+
     let texture_creator = canvas.texture_creator();
 
     // init logger
     env::set_var("RUST_LOG", "debug");
     env_logger::init();
 
-    let mut screen = Screen::new(SCREEN_WIDTH, SCREEN_HEIGHT);
-
     let rock_texture = texture_creator.load_texture("assets/rock.png").unwrap();
     let paper_texture = texture_creator.load_texture("assets/paper.png").unwrap();
     let scissors_texture = texture_creator.load_texture("assets/scissors.png").unwrap();
 
-    let objects_count = 2;
+    let mut screen = Screen::new(SCREEN_WIDTH, SCREEN_HEIGHT, font);
+
+    let objects_count = 60;
     for i in 0..objects_count {
-        let size = 200 / objects_count;
-        let (position, width, height, mass, velocity) = (
-            Position::random(
-                (SCREEN_WIDTH - size) as f64,
-                (SCREEN_HEIGHT - size) as f64,
-                (SCREEN_WIDTH - size) as f64,
-                (SCREEN_HEIGHT - size) as f64,
-            ),
-            size,
-            size,
-            1f64,
-            Velocity::random(1.3, 1.3),
-        );
+        let size = 1500 / objects_count;
+        let (width, height, mass, velocity) = (size, size, 1f64, Velocity::random(1.1, 1.1));
 
         let object = match i % 3 {
             0 => ScreenObject::Paper(Paper::new(
-                position,
+                Position::random(
+                    0.0..(SCREEN_WIDTH as f64 / 5.0),
+                    0.0..(SCREEN_HEIGHT as f64 / 5.0),
+                    (SCREEN_WIDTH - size) as f64,
+                    (SCREEN_HEIGHT - size) as f64,
+                ),
                 width,
                 height,
                 mass,
@@ -77,7 +77,12 @@ pub fn main() {
                 &rock_texture,
             )),
             1 => ScreenObject::Rock(Rock::new(
-                position,
+                Position::random(
+                    SCREEN_WIDTH as f64 - (SCREEN_WIDTH as f64 / 5.0)..SCREEN_WIDTH as f64,
+                    0.0..(SCREEN_HEIGHT as f64 / 5.0),
+                    (SCREEN_HEIGHT - size) as f64,
+                    (SCREEN_HEIGHT - size) as f64,
+                ),
                 width,
                 height,
                 mass,
@@ -87,7 +92,12 @@ pub fn main() {
                 &scissors_texture,
             )),
             2 => ScreenObject::Scissors(Scissors::new(
-                position,
+                Position::random(
+                    (SCREEN_WIDTH as f64 / 5.0)..SCREEN_WIDTH as f64,
+                    SCREEN_HEIGHT as f64 - (SCREEN_HEIGHT as f64 / 5.0)..SCREEN_HEIGHT as f64,
+                    (SCREEN_WIDTH - size) as f64,
+                    (SCREEN_HEIGHT - size) as f64,
+                ),
                 width,
                 height,
                 mass,
@@ -102,6 +112,8 @@ pub fn main() {
         screen.add_object(object);
     }
 
+    let mut running = false;
+
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
@@ -110,9 +122,17 @@ pub fn main() {
                     keycode: Some(Keycode::Escape),
                     ..
                 } => break 'running,
-                Event::KeyDown { .. } => {}
+                Event::KeyDown {
+                    keycode: Some(Keycode::Return),
+                    ..
+                } => {
+                    running = true;
+                }
                 _ => {}
             }
+        }
+        if !running {
+            continue;
         }
         canvas.set_draw_color(Color::RGB(0, 0, 0));
         canvas.clear();
@@ -120,6 +140,6 @@ pub fn main() {
         screen.draw(&mut canvas);
 
         canvas.present();
-        std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 240));
+        std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 150));
     }
 }

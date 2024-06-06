@@ -2,25 +2,33 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::ops::Deref;
 
+use sdl2::pixels::Color;
+use sdl2::rect::Rect;
 use sdl2::render::Canvas;
+use sdl2::ttf::Font;
 use sdl2::video::Window;
 use uuid::Uuid;
 
 use crate::screen_object::ScreenObject;
 
-#[derive(Clone)]
-pub struct Screen<'a, 'r> {
+pub struct Screen<'a, 'r, 'ttf_module, 'rwops> {
     width: u32,
     height: u32,
     objects: HashMap<Uuid, RefCell<ScreenObject<'a, 'r>>>,
+    font: Font<'ttf_module, 'rwops>,
 }
 
-impl<'a, 'r> Screen<'a, 'r> {
-    pub fn new(width: u32, height: u32) -> Screen<'a, 'r> {
+impl<'a, 'r, 'ttf_module, 'rwops> Screen<'a, 'r, 'ttf_module, 'rwops> {
+    pub fn new(
+        width: u32,
+        height: u32,
+        font: Font<'ttf_module, 'rwops>,
+    ) -> Screen<'a, 'r, 'ttf_module, 'rwops> {
         Screen {
             width,
             height,
             objects: HashMap::new(),
+            font,
         }
     }
 
@@ -96,7 +104,53 @@ impl<'a, 'r> Screen<'a, 'r> {
         }
     }
 
+    fn draw_text(&mut self, canvas: &mut Canvas<Window>, text: &str) {
+        let surface = self
+            .font
+            .render(text)
+            .blended(Color::RGBA(255, 255, 255, 255))
+            .map_err(|e| e.to_string())
+            .unwrap();
+        let texture_creator = canvas.texture_creator();
+        let font_texture = texture_creator
+            .create_texture_from_surface(&surface)
+            .map_err(|e| e.to_string())
+            .unwrap();
+
+        let font_width = surface.width();
+        let font_height = surface.height();
+        canvas
+            .copy(
+                &font_texture,
+                None,
+                Rect::new(0, 0, font_width, font_height),
+            )
+            .unwrap();
+    }
+
+    fn object_count(&self) -> (usize, usize, usize) {
+        let (mut rock_count, mut paper_count, mut scissors_count) = (0, 0, 0);
+        for object in self.objects.values() {
+            match object.borrow().deref() {
+                ScreenObject::Paper(_) => paper_count += 1,
+                ScreenObject::Rock(_) => rock_count += 1,
+                ScreenObject::Scissors(_) => scissors_count += 1,
+            }
+        }
+        (rock_count, paper_count, scissors_count)
+    }
+
     pub fn draw(&mut self, canvas: &mut Canvas<Window>) {
+        self.draw_text(
+            canvas,
+            format!(
+                "Rock: {}, Paper: {}, Scissors: {}",
+                self.object_count().0,
+                self.object_count().1,
+                self.object_count().2
+            )
+            .as_str(),
+        );
         self.next_frame();
         for object in self.objects.values_mut() {
             match object.borrow().deref() {

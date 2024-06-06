@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 #[derive(Debug, Clone, Copy)]
 pub struct Position {
     x: f64,
@@ -11,15 +13,10 @@ impl Position {
         Position { x, y, max_x, max_y }
     }
 
-    pub fn random(max_width: f64, max_height: f64, max_x: f64, max_y: f64) -> Position {
+    pub fn random(range_x: Range<f64>, range_y: Range<f64>, max_x: f64, max_y: f64) -> Position {
         use rand::Rng;
         let mut rng = rand::thread_rng();
-        Self::new(
-            rng.gen_range(0.1..max_width),
-            rng.gen_range(0.1..max_height),
-            max_x,
-            max_y,
-        )
+        Self::new(rng.gen_range(range_x), rng.gen_range(range_y), max_x, max_y)
     }
 
     #[inline]
