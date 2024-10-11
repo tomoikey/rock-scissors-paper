@@ -24,6 +24,7 @@ mod screen;
 mod screen_object;
 mod se;
 mod velocity;
+mod sample;
 
 pub const SCREEN_WIDTH: u32 = 800;
 pub const SCREEN_HEIGHT: u32 = 800;
@@ -53,7 +54,6 @@ pub fn main() {
     let rock_texture = texture_creator.load_texture("assets/rock.png").unwrap();
     let paper_texture = texture_creator.load_texture("assets/paper.png").unwrap();
     let scissors_texture = texture_creator.load_texture("assets/scissors.png").unwrap();
-
     let mut screen = Screen::new(SCREEN_WIDTH, SCREEN_HEIGHT, font);
 
     let objects_count = 60;
@@ -61,6 +61,7 @@ pub fn main() {
         let size = 1500 / objects_count;
         let (width, height, mass, velocity) = (size, size, 1f64, Velocity::random(1.1, 1.1));
 
+        let a = vec![1, 2, 3].iter(;
         let object = match i % 3 {
             0 => ScreenObject::Paper(Paper::new(
                 Position::random(
